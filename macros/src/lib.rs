@@ -579,7 +579,7 @@ pub fn write(ts: TokenStream) -> TokenStream {
     };
 
     let fmt = &write.fmt;
-    let sym = mksym(&ls, "fmt", false);
+    let sym = mksym(&ls, "write", false);
     quote!(match (#fmt, #(&(#args)),*) {
         (ref mut _fmt_, #(#pats),*) => {
             // HACK conditional should not be here; see FIXME in `format`

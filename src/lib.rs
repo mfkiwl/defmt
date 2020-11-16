@@ -72,6 +72,11 @@ pub use defmt_macros::trace;
 /// [the manual]: https://defmt.ferrous-systems.com/macros.html
 pub use defmt_macros::warn;
 
+/// Writes formatted data to a [`Formatter`].
+///
+/// [`Formatter`]: struct.Formatter.html
+pub use defmt_macros::write;
+
 /// Defines the global defmt logger.
 ///
 /// `#[global_logger]` needs to be put on a unit struct type declaration. This struct has to

@@ -29,12 +29,14 @@ use defmt_parser::{get_max_bitfield_range, Fragment, Parameter, Type};
 include!(concat!(env!("OUT_DIR"), "/version.rs"));
 
 #[derive(PartialEq, Eq, Debug)]
+#[non_exhaustive]
 pub enum Tag {
     /// A format string for use with `{:?}`. Used for both primitive format strings (which are
-    /// special cased to have lower indices), and user format strings created by
-    /// `#[derive(Format)]`.
+    /// special cased to have lower indices), and format strings created by `#[derive(Format)]`.
     Fmt,
-    /// An interned string, for use with `{:istr}`.
+    /// A format string that was used in a `write!` invocation.
+    Write,
+    /// An interned string produced by `intern!`, for use with `{:istr}`.
     Str,
 
     Trace,
@@ -47,7 +49,7 @@ pub enum Tag {
 impl Tag {
     fn to_level(&self) -> Option<Level> {
         match self {
-            Tag::Fmt | Tag::Str => None,
+            Tag::Fmt | Tag::Write | Tag::Str => None,
             Tag::Trace => Some(Level::Trace),
             Tag::Debug => Some(Level::Debug),
             Tag::Info => Some(Level::Info),
