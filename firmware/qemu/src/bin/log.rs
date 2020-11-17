@@ -4,7 +4,7 @@
 use core::sync::atomic::{AtomicU32, Ordering};
 use cortex_m_rt::entry;
 use cortex_m_semihosting::debug;
-use defmt::Format;
+use defmt::{Format, Formatter};
 
 use defmt_semihosting as _; // global logger
 
@@ -417,6 +417,23 @@ fn main() -> ! {
         };
 
         defmt::info!("true, [1, 2]: {:?}", dhcp_repr);
+    }
+
+    {
+        // `write!` tests
+        struct MyStruct {
+            a: u8,
+            b: u16,
+        }
+
+        impl Format for MyStruct {
+            fn format(&self, f: &mut Formatter) {
+                defmt::write!(f, "a={:u8}", self.a);
+                defmt::write!(f, "b={:u16}", self.b);
+            }
+        }
+
+        defmt::info!("{:?}", MyStruct { a: 0xff, b: 0x55aa });
     }
 
     loop {

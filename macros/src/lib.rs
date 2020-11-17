@@ -541,7 +541,7 @@ pub fn write(ts: TokenStream) -> TokenStream {
 
     let fmt = &write.fmt;
     let sym = mksym(&ls, "write", false);
-    quote!(match (&mut #fmt, #(&(#args)),*) {
+    quote!(match (&mut *#fmt, #(&(#args)),*) {
         (_fmt_, #(#pats),*) => {
             // HACK conditional should not be here; see FIXME in `format`
             if _fmt_.needs_tag() {
@@ -554,8 +554,8 @@ pub fn write(ts: TokenStream) -> TokenStream {
     .into()
 }
 
-fn mksym(string: &str, section: &str, is_log_statement: bool) -> TokenStream2 {
-    let sym = symbol::Symbol::new(section, string).mangle();
+fn mksym(string: &str, tag: &str, is_log_statement: bool) -> TokenStream2 {
+    let sym = symbol::Symbol::new(tag, string).mangle();
     let section = format!(".defmt.{}", sym);
 
     // NOTE we rely on this variable name when extracting file location information from the DWARF

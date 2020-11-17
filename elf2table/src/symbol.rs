@@ -46,6 +46,7 @@ impl Symbol {
             "defmt_info" => SymbolTag::Defmt(Tag::Info),
             "defmt_warn" => SymbolTag::Defmt(Tag::Warn),
             "defmt_error" => SymbolTag::Defmt(Tag::Error),
+            "defmt_write" => SymbolTag::Defmt(Tag::Write),
             _ => SymbolTag::Custom(&self.tag),
         }
     }
