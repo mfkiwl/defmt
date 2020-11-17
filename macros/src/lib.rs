@@ -461,45 +461,6 @@ pub fn error(ts: TokenStream) -> TokenStream {
     log(Level::Error, ts)
 }
 
-// TODO share more code with `log`
-#[proc_macro]
-pub fn winfo(ts: TokenStream) -> TokenStream {
-    let write = parse_macro_input!(ts as Write);
-    let ls = write.litstr.value();
-    let fragments = match defmt_parser::parse(&ls) {
-        Ok(args) => args,
-        Err(e) => {
-            return parse::Error::new(write.litstr.span(), e)
-                .to_compile_error()
-                .into()
-        }
-    };
-
-    let args = write
-        .rest
-        .map(|(_, exprs)| exprs.into_iter().collect())
-        .unwrap_or(vec![]);
-
-    let (pats, exprs) = match Codegen::new(&fragments, args.len(), write.litstr.span()) {
-        Ok(cg) => (cg.pats, cg.exprs),
-        Err(e) => return e.to_compile_error().into(),
-    };
-
-    let f = &write.fmt;
-    let sym = mksym(&ls, "info", false /* don't care */);
-    quote!({
-        match (&mut #f, defmt::export::timestamp(), #(&(#args)),*) {
-            (_fmt_, ts, #(#pats),*) => {
-                _fmt_.istr(&defmt::export::istr(#sym));
-                _fmt_.leb64(ts);
-                #(#exprs;)*
-                _fmt_.finalize();
-            }
-        }
-    })
-    .into()
-}
-
 struct Log {
     litstr: LitStr,
     rest: Option<(Token![,], Punctuated<Expr, Token![,]>)>,
@@ -580,8 +541,8 @@ pub fn write(ts: TokenStream) -> TokenStream {
 
     let fmt = &write.fmt;
     let sym = mksym(&ls, "write", false);
-    quote!(match (#fmt, #(&(#args)),*) {
-        (ref mut _fmt_, #(#pats),*) => {
+    quote!(match (&mut #fmt, #(&(#args)),*) {
+        (_fmt_, #(#pats),*) => {
             // HACK conditional should not be here; see FIXME in `format`
             if _fmt_.needs_tag() {
                 _fmt_.istr(&defmt::export::istr(#sym));

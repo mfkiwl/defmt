@@ -126,8 +126,6 @@ pub use defmt_macros::global_logger;
 /// ```
 pub use defmt_macros::timestamp;
 
-#[doc(hidden)]
-pub use defmt_macros::winfo;
 #[doc(hidden)] // documented as the `Format` trait instead
 pub use defmt_macros::Format;
 
