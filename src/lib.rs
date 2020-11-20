@@ -477,6 +477,8 @@ fn default_timestamp() -> u64 {
 /// `consts` module. Example:
 ///
 /// ```
+/// use defmt::{consts, Debug2Format};
+///
 /// #[derive(Debug)]
 /// struct S { x: i8, y: i16 }
 ///
